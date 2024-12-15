@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gym Training App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f7f7f7;
+      color: #333;
+    }
+    header {
+      background-color: #4caf50;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    main {
+      padding: 1rem;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .section {
+      background: white;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .section h2 {
+      margin-top: 0;
+    }
+    label {
+      display: block;
+      margin: 0.5rem 0 0.2rem;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    table th, table td {
+      border: 1px solid #ddd;
+      padding: 0.5rem;
+      text-align: center;
+    }
+    table th {
+      background-color: #f4f4f4;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Gym Training App</h1>
+  </header>
+  <main>
+    <div class="container">
+      <!-- Section for creating new training -->
+      <div class="section" id="create-training-section">
+        <h2>Create New Training</h2>
+        <form id="training-form">
+          <label for="training-name">Training Name</label>
+          <input type="text" id="training-name" placeholder="Enter training name" required>
+          
+          <label for="exercise-name">Exercise</label>
+          <input type="text" id="exercise-name" placeholder="Enter exercise name" required>
+          
+          <label for="sets">Sets</label>
+          <input type="number" id="sets" placeholder="Enter number of sets" required>
+          
+          <label for="weight">Weight (kg)</label>
+          <input type="number" id="weight" placeholder="Enter weight used" required>
+          
+          <button type="button" id="add-exercise-btn">Add Exercise</button>
+        </form>
+        <div>
+          <h3>Added Exercises</h3>
+          <table id="exercises-table">
+            <thead>
+              <tr>
+                <th>Exercise</th>
+                <th>Sets</th>
+                <th>Weight (kg)</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Dynamic rows will be added here -->
+            </tbody>
+          </table>
+        </div>
+        <button id="save-training-btn">Save Training</button>
+      </div>
+
+      <!-- Section for viewing previous trainings -->
+      <div class="section" id="previous-trainings-section">
+        <h2>Previous Trainings</h2>
+        <div id="trainings-list">
+          <!-- Dynamic content of previous trainings will be added here -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // JavaScript for handling dynamic content and user interaction
+    const exercisesTableBody = document.querySelector("#exercises-table tbody");
+    const trainingsList = document.querySelector("#trainings-list");
+
+    let exercises = [];
+    let trainings = [];
+
+    document.getElementById("add-exercise-btn").addEventListener("click", () => {
+      const exerciseName = document.getElementById("exercise-name").value;
+      const sets = document.getElementById("sets").value;
+      const weight = document.getElementById("weight").value;
+
+      if (exerciseName && sets && weight) {
+        const exercise = { name: exerciseName, sets, weight };
+        exercises.push(exercise);
+        updateExercisesTable();
+        document.getElementById("exercise-name").value = '';
+        document.getElementById("sets").value = '';
+        document.getElementById("weight").value = '';
+      } else {
+        alert("Please fill in all fields");
+      }
+    });
+
+    function updateExercisesTable() {
+      exercisesTableBody.innerHTML = '';
+      exercises.forEach((exercise, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${exercise.name}</td>
+          <td>${exercise.sets}</td>
+          <td>${exercise.weight}</td>
+          <td><button onclick="removeExercise(${index})">Remove</button></td>
+        `;
+        exercisesTableBody.appendChild(row);
+      });
+    }
+
+    function removeExercise(index) {
+      exercises.splice(index, 1);
+      updateExercisesTable();
+    }
+
+    document.getElementById("save-training-btn").addEventListener("click", () => {
+      const trainingName = document.getElementById("training-name").value;
+
+      if (trainingName && exercises.length > 0) {
+        const training = { name: trainingName, exercises };
+        trainings.push(training);
+        updateTrainingsList();
+        exercises = [];
+        updateExercisesTable();
+        document.getElementById("training-name").value = '';
+      } else {
+        alert("Please enter a training name and add exercises");
+      }
+    });
+
+    function updateTrainingsList() {
+      trainingsList.innerHTML = '';
+      trainings.forEach((training, index) => {
+        const div = document.createElement("div");
+        div.className = "training";
+        div.innerHTML = `
+          <h3>${training.name}</h3>
+          <ul>
+            ${training.exercises.map(e => `<li>${e.name} - ${e.sets} sets of ${e.weight} kg</li>`).join('')}
+          </ul>
+        `;
+        trainingsList.appendChild(div);
+      });
+    }
+  </script>
+</body>
+</html>
